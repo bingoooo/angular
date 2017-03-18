@@ -4,8 +4,53 @@
         <title>Guess the Number</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     </head>
-    <body>
-        <script src="angular.js"></script>
+    <body ng-app="app">
+        <div class="container" ng-controller="GuessTheNumberController">
+            <h2>Guess the Number !</h2>
+            <h3>Tries : {{games}}</h3>
+            <p class="well lead">Guess the computer generated random number between 1 and 1000</p>
+            <label for="">Your Guess </label><input type="number" ng-model="guess" ng-keyup="keyUp($event)" />
+            <button ng-click="verifyGuess()" class="btn btn-primary btn-sm">Verify</button>
+            <button ng-click="initializeGame()" class="btn btn-warning btn-sm">Restart</button>
+            <p>
+                <p ng-show="deviation<0" class="alert alert-warning">Your Guess is Higher</p>
+                <p ng-show="deviation>0" class="alert alert-warning">Your Guess is Lower</p>
+                <p ng-show="deviation===0" class="alert alert-success">Yes! That's It.</p>
+            </p>
+            <p class="text-info">No of Guesses : <span class="badge">{{noOfTries}}</span></p>
+            <p>{{win}}</p>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.0.min.js" integrity="sha256-JAW99MJVpJBGcbzEuXk4Az05s/XyDdBomFqNlM3ic+I=" crossorigin="anonymous"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="angular.js"></script>
+        <script>
+            angular.module('app', []).controller('GuessTheNumberController', GuessTheNumberController);
+            function GuessTheNumberController($scope){
+                $scope.keyUp = function($event){
+                    if($event.key === "Enter" || $event.keyCode === 13){
+                        $scope.verifyGuess();
+                    }
+                }
+                $scope.verifyGuess = function(){
+                    $scope.deviation = $scope.original - $scope.guess;
+                    $scope.noOfTries = $scope.noOfTries + 1;
+                    if($scope.deviation === 0){
+                        $scope.games++;
+                        setTimeout(function() {
+                            $scope.initializeGame();
+                        }, 200);
+                    }
+                }
+                $scope.initializeGame = function(){
+                    $scope.noOfTries = 0;
+                    $scope.original = Math.floor((Math.random() * 1000) + 1);
+                    $scope.deviation = null;
+                    $scope.guess = null;
+                    $scope.win = "";
+                }
+                $scope.games = 0;
+                $scope.initializeGame();
+            }
+        </script>
     </body>
 </html>
